@@ -364,6 +364,11 @@ resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
                 ]
               }
               actions: {
+                Compose_AliasesNormalized: {
+                  type: 'Compose'
+                  inputs: '@{replace(replace(replace(replace(string(coalesce(items(\'For_each_Vulnerability\')?[\'aliases\'], \'\')), \'[\', \'\'), \']\', \'\'), \'"\', \'\'), \',\', decodeUriComponent(\'%0A\'))}'
+                  runAfter: {}
+                }
                 Compose_TransformedItem: {
                   type: 'Compose'
                   inputs: {
@@ -377,12 +382,16 @@ resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
                     EPSS: '@items(\'For_each_Vulnerability\')?[\'epss\']'
                     Vendor: '@{if(empty(coalesce(items(\'For_each_Vulnerability\')?[\'enisaIdVendor\'], createArray())), \'\', first(coalesce(items(\'For_each_Vulnerability\')?[\'enisaIdVendor\'], createArray()))?[\'vendor\']?[\'name\'])}'
                     Product: '@{if(empty(coalesce(items(\'For_each_Vulnerability\')?[\'enisaIdProduct\'], createArray())), \'\', first(coalesce(items(\'For_each_Vulnerability\')?[\'enisaIdProduct\'], createArray()))?[\'product\']?[\'name\'])}'
-                    CveId: '@{if(startsWith(first(coalesce(items(\'For_each_Vulnerability\')?[\'aliases\'], createArray())), \'CVE-\'), first(coalesce(items(\'For_each_Vulnerability\')?[\'aliases\'], createArray())), if(startsWith(last(coalesce(items(\'For_each_Vulnerability\')?[\'aliases\'], createArray())), \'CVE-\'), last(coalesce(items(\'For_each_Vulnerability\')?[\'aliases\'], createArray())), \'\'))}'
-                    GHSAId: '@{if(startsWith(first(coalesce(items(\'For_each_Vulnerability\')?[\'aliases\'], createArray())), \'GHSA-\'), first(coalesce(items(\'For_each_Vulnerability\')?[\'aliases\'], createArray())), if(startsWith(last(coalesce(items(\'For_each_Vulnerability\')?[\'aliases\'], createArray())), \'GHSA-\'), last(coalesce(items(\'For_each_Vulnerability\')?[\'aliases\'], createArray())), \'\'))}'
+                    CveId: '@{if(startsWith(trim(replace(first(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'CVE-\'), trim(replace(first(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), if(startsWith(trim(replace(last(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'CVE-\'), trim(replace(last(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'\'))}'
+                    GHSAId: '@{if(startsWith(trim(replace(first(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'GHSA-\'), trim(replace(first(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), if(startsWith(trim(replace(last(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'GHSA-\'), trim(replace(last(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'\'))}'
                     References: '@{items(\'For_each_Vulnerability\')?[\'references\']}'
                     Exploited: '@contains(variables(\'exploitedIds\'), items(\'For_each_Vulnerability\')?[\'id\'])'
                   }
-                  runAfter: {}
+                  runAfter: {
+                    Compose_AliasesNormalized: [
+                      'Succeeded'
+                    ]
+                  }
                 }
                 Append_TransformedItem: {
                   type: 'AppendToArrayVariable'
