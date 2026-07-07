@@ -89,7 +89,7 @@ resource dataCollectionRule 'Microsoft.Insights/dataCollectionRules@2022-06-01' 
           'lawDestination'
         ]
         outputStream: streamName
-        transformKql: 'source | extend CveId = tostring(extract(@"CVE-\\d{4}-\\d+", 0, tostring(Aliases))), GHSAId = tostring(extract(@"GHSA-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}", 0, tostring(Aliases)))'
+        transformKql: 'source'
       }
     ]
   }
