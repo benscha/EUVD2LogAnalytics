@@ -35,6 +35,7 @@ az group create \
 # Review alertEmail in main.bicep if a different notification mailbox is needed.
 
 az deployment group create \
+  --subscription p-sub-001 \
   --resource-group rg-euvd-prod \
   --template-file main.bicep \
   --parameters parameters/prod.bicepparam
@@ -88,3 +89,11 @@ against a fresh (or existing) resource group. No manual configuration is require
 ```
 
 ```
+
+## Notes
+
+
+By default, the Logic App retrieves only the latest values ​​from the EUVD for the past day. If you want more data initially, run the Logic App once with a modified API filter.
+Change line 34 in the Logic App to "value": "@{formatDateTime(addDays(utcNow(), -365), 'yyyy-MM-dd')}" if you like to fetch the Data from the last 365d
+
+
