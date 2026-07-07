@@ -9,6 +9,8 @@ The whole solution deploys with a single Bicep template and uses **no secrets,
 certificates, or shared keys anywhere**. All Azure-to-Azure authentication is done with
 a user-assigned managed identity; the EUVD API itself requires no authentication.
 
+Deployed in a max 15 minutes with the appropriate permissions ;-)
+
 ![Table](images/table.png)
 
 ## Architecture
@@ -81,3 +83,8 @@ troubleshooting-guide.md        Common issues and fixes
 
 The entire environment is reproducible by re-running the deployment command above
 against a fresh (or existing) resource group. No manual configuration is required.
+
+## KQL Snippets
+```
+
+```
