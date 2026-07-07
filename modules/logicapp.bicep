@@ -382,8 +382,9 @@ resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
                     EPSS: '@items(\'For_each_Vulnerability\')?[\'epss\']'
                     Vendor: '@{if(empty(coalesce(items(\'For_each_Vulnerability\')?[\'enisaIdVendor\'], createArray())), \'\', first(coalesce(items(\'For_each_Vulnerability\')?[\'enisaIdVendor\'], createArray()))?[\'vendor\']?[\'name\'])}'
                     Product: '@{if(empty(coalesce(items(\'For_each_Vulnerability\')?[\'enisaIdProduct\'], createArray())), \'\', first(coalesce(items(\'For_each_Vulnerability\')?[\'enisaIdProduct\'], createArray()))?[\'product\']?[\'name\'])}'
-                    CveId: '@{if(startsWith(trim(replace(first(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'CVE-\'), trim(replace(first(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), if(startsWith(trim(replace(last(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'CVE-\'), trim(replace(last(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'\'))}'
-                    GHSAId: '@{if(startsWith(trim(replace(first(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'GHSA-\'), trim(replace(first(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), if(startsWith(trim(replace(last(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'GHSA-\'), trim(replace(last(split(outputs(\'Compose_AliasesNormalized\'), decodeUriComponent(\'%0A\'))), decodeUriComponent(\'%0D\'), \'\')), \'\'))}'
+                    CveId: ''
+                    GHSAId: ''
+                    Aliases: '@{outputs(\'Compose_AliasesNormalized\')}'
                     References: '@{items(\'For_each_Vulnerability\')?[\'references\']}'
                     Exploited: '@contains(variables(\'exploitedIds\'), items(\'For_each_Vulnerability\')?[\'id\'])'
                   }
