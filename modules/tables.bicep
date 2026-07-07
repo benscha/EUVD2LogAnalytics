@@ -25,6 +25,8 @@ var columns = [
   { name: 'EPSS', type: 'real' }
   { name: 'Vendor', type: 'string' }
   { name: 'Product', type: 'string' }
+  { name: 'CveId', type: 'string' }
+  { name: 'GHSAId', type: 'string' }
   { name: 'Aliases', type: 'string' }
   { name: 'References', type: 'string' }
   { name: 'Exploited', type: 'boolean' }

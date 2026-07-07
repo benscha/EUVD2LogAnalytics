@@ -2,12 +2,14 @@
 
 A fully Azure-native, serverless pipeline that pulls vulnerability data daily from the
 public [European Union Vulnerability Database (EUVD)](https://euvd.enisa.europa.eu/) API
-into an Azure Log Analytics workspace and Microsoft Sentinel — for threat intelligence,
+into an Azure Log Analytics workspace and Microsoft Sentinel for threat intelligence,
 hunting, analytics rules, workbooks, and incident management.
 
 The whole solution deploys with a single Bicep template and uses **no secrets,
 certificates, or shared keys anywhere**. All Azure-to-Azure authentication is done with
 a user-assigned managed identity; the EUVD API itself requires no authentication.
+
+![Table](images/table.png)
 
 ## Architecture
 

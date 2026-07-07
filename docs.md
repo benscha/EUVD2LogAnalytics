@@ -27,7 +27,9 @@ bound) until a page returns fewer than `size` items.
 | `epss` | `EPSS` | real, 0.0-1.0 |
 | `enisaIdVendor[0].vendor.name` | `Vendor` | first vendor name when present |
 | `enisaIdProduct[0].product.name` | `Product` | first product name when present |
-| `aliases` | `Aliases` | newline-separated in the source |
+| `aliases` | `CveId` | extracted from newline-separated aliases when an alias starts with `CVE-` |
+| `aliases` | `GHSAId` | extracted from newline-separated aliases when an alias starts with `GHSA-` |
+| `aliases` | `Aliases` | retained in the schema for compatibility; no longer populated by the Logic App |
 | `references` | `References` | newline-separated in the source |
 | n/a (derived) | `Exploited` | `true` if the id also appears in the `exploited=true` result set for the same window |
 | n/a (generated) | `TimeGenerated` | set to the ingestion timestamp |
@@ -48,6 +50,8 @@ CVSSVersion     string
 EPSS            real
 Vendor          string
 Product         string
+CveId           string
+GHSAId          string
 Aliases         string
 References      string
 Exploited       boolean
