@@ -204,10 +204,61 @@ resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
             ]
           }
         }
+        Initialize_BatchSize: {
+          type: 'InitializeVariable'
+          inputs: {
+            variables: [
+              {
+                name: 'batchSize'
+                type: 'integer'
+                value: 500
+              }
+            ]
+          }
+          runAfter: {
+            Initialize_HasMoreExploitedPages: [
+              'Succeeded'
+            ]
+          }
+        }
+        Initialize_BatchStart: {
+          type: 'InitializeVariable'
+          inputs: {
+            variables: [
+              {
+                name: 'batchStart'
+                type: 'integer'
+                value: 0
+              }
+            ]
+          }
+          runAfter: {
+            Initialize_BatchSize: [
+              'Succeeded'
+            ]
+          }
+        }
+        Initialize_HasMoreBatches: {
+          type: 'InitializeVariable'
+          inputs: {
+            variables: [
+              {
+                name: 'hasMoreBatches'
+                type: 'boolean'
+                value: false
+              }
+            ]
+          }
+          runAfter: {
+            Initialize_BatchStart: [
+              'Succeeded'
+            ]
+          }
+        }
         Scope_Main: {
           type: 'Scope'
           runAfter: {
-            Initialize_HasMoreExploitedPages: [
+            Initialize_HasMoreBatches: [
               'Succeeded'
             ]
           }
@@ -216,8 +267,8 @@ resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
               type: 'Until'
               expression: '@equals(variables(\'hasMorePages\'), false)'
               limit: {
-                count: 20
-                timeout: 'PT10M'
+                count: 500
+                timeout: 'PT1H'
               }
               runAfter: {}
               actions: {
@@ -285,8 +336,8 @@ resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
               type: 'Until'
               expression: '@equals(variables(\'hasMoreExploitedPages\'), false)'
               limit: {
-                count: 20
-                timeout: 'PT10M'
+                count: 500
+                timeout: 'PT1H'
               }
               runAfter: {}
               actions: {
@@ -417,22 +468,100 @@ resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
                 ]
               }
               actions: {
-                Send_To_Logs_Ingestion_API: {
-                  type: 'Http'
+                Set_BatchStart: {
+                  type: 'SetVariable'
                   inputs: {
-                    method: 'POST'
-                    uri: '@{parameters(\'logsIngestionEndpoint\')}/dataCollectionRules/@{parameters(\'dcrImmutableId\')}/streams/@{parameters(\'streamName\')}?api-version=2023-01-01'
-                    headers: {
-                      'Content-Type': 'application/json'
-                    }
-                    body: '@variables(\'transformedItems\')'
-                    authentication: {
-                      type: 'ManagedServiceIdentity'
-                      identity: '@parameters(\'managedIdentityResourceId\')'
-                      audience: 'https://monitor.azure.com'
-                    }
+                    name: 'batchStart'
+                    value: 0
                   }
                   runAfter: {}
+                }
+                Set_HasMoreBatches_True: {
+                  type: 'SetVariable'
+                  inputs: {
+                    name: 'hasMoreBatches'
+                    value: true
+                  }
+                  runAfter: {
+                    Set_BatchStart: [
+                      'Succeeded'
+                    ]
+                  }
+                }
+                Until_SendInBatches: {
+                  type: 'Until'
+                  expression: '@equals(variables(\'hasMoreBatches\'), false)'
+                  limit: {
+                    count: 1000
+                    timeout: 'PT1H'
+                  }
+                  runAfter: {
+                    Set_HasMoreBatches_True: [
+                      'Succeeded'
+                    ]
+                  }
+                  actions: {
+                    Compose_CurrentBatch: {
+                      type: 'Compose'
+                      inputs: '@take(skip(variables(\'transformedItems\'), variables(\'batchStart\')), variables(\'batchSize\'))'
+                      runAfter: {}
+                    }
+                    Condition_BatchHasItems: {
+                      type: 'If'
+                      expression: '@greater(length(outputs(\'Compose_CurrentBatch\')), 0)'
+                      runAfter: {
+                        Compose_CurrentBatch: [
+                          'Succeeded'
+                        ]
+                      }
+                      actions: {
+                        Send_Batch_To_Logs_Ingestion_API: {
+                          type: 'Http'
+                          inputs: {
+                            method: 'POST'
+                            uri: '@{parameters(\'logsIngestionEndpoint\')}/dataCollectionRules/@{parameters(\'dcrImmutableId\')}/streams/@{parameters(\'streamName\')}?api-version=2023-01-01'
+                            headers: {
+                              'Content-Type': 'application/json'
+                            }
+                            body: '@outputs(\'Compose_CurrentBatch\')'
+                            authentication: {
+                              type: 'ManagedServiceIdentity'
+                              identity: '@parameters(\'managedIdentityResourceId\')'
+                              audience: 'https://monitor.azure.com'
+                            }
+                          }
+                          runAfter: {}
+                        }
+                      }
+                      else: {
+                        actions: {}
+                      }
+                    }
+                    Set_HasMoreBatches: {
+                      type: 'SetVariable'
+                      inputs: {
+                        name: 'hasMoreBatches'
+                        value: '@greater(length(skip(variables(\'transformedItems\'), add(variables(\'batchStart\'), variables(\'batchSize\')))), 0)'
+                      }
+                      runAfter: {
+                        Condition_BatchHasItems: [
+                          'Succeeded'
+                        ]
+                      }
+                    }
+                    Increment_BatchStart: {
+                      type: 'IncrementVariable'
+                      inputs: {
+                        name: 'batchStart'
+                        value: '@variables(\'batchSize\')'
+                      }
+                      runAfter: {
+                        Set_HasMoreBatches: [
+                          'Succeeded'
+                        ]
+                      }
+                    }
+                  }
                 }
               }
               else: {

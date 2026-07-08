@@ -87,13 +87,17 @@ against a fresh (or existing) resource group. No manual configuration is require
 
 ## KQL Snippets
 ```
+DeviceTvmSoftwareVulnerabilities
+| join EUVD_CL on $left.CveId == $right.CveId
 
 ```
 
 ## Notes
 
 
-By default, the Logic App retrieves only the latest values ​​from the EUVD for the past day. If you want more data initially, run the Logic App once with a modified API filter.
-Change line 34 in the Logic App to "value": "@{formatDateTime(addDays(utcNow(), -365), 'yyyy-MM-dd')}" if you like to fetch the Data from the last 365d
+By default, the Logic App retrieves only the latest values from the EUVD for the past day.
+For an initial backfill, temporarily change `Initialize_FromDate` in `modules/logicapp.bicep`
+to `"@{formatDateTime(addDays(utcNow(), -365), 'yyyy-MM-dd')}"` and run the workflow once.
+The workflow sends ingestion payloads in batches to handle larger backfills more reliably.
 
 

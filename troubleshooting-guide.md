@@ -36,9 +36,11 @@ to either would break this).
 
 **Cause:** an unusually large number of vulnerabilities were published in a single day.
 
-**Fix:** this is a safety bound, not an expected daily volume. If it is consistently hit,
-increase the `count` in the `limit` property of `Until_AllVulnerabilities` /
-`Until_ExploitedVulnerabilities` in `modules/logicapp.bicep`.
+**Fix:** the Logic App now uses higher page limits and sends data to the Logs Ingestion
+API in smaller batches, which is suitable for large initial backfills (for example,
+365 days). If you still hit limits, increase the `count` in the `limit` property of
+`Until_AllVulnerabilities` / `Until_ExploitedVulnerabilities` in
+`modules/logicapp.bicep`.
 
 ## Deployment fails with "alertEmail" validation error
 
