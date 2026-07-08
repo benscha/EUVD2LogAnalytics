@@ -100,10 +100,16 @@ DeviceTvmSoftwareVulnerabilities
 
 ## Notes
 
-
 By default, the Logic App retrieves only the latest values from the EUVD for the past day.
 For an initial backfill, temporarily change `Initialize_FromDate` in `modules/logicapp.bicep`
 to `"@{formatDateTime(addDays(utcNow(), -365), 'yyyy-MM-dd')}"` and run the workflow once.
 The workflow sends ingestion payloads in batches to handle larger backfills more reliably.
 
 The First Ingestion of 365D of Data was about 0.012 GB, so you don't have to be afraid of the Costs.
+
+
+## Disclaimer
+ 
+ * **AI-Assisted:** Artificial intelligence was utilized to support the development and optimization of this project.
+ * **Rigorous Testing:** Every component has undergone intensive manual review and thorough testing.
+ * **Production Proven:** This project is not just a proof of concept; it is successfully deployed and actively running in multiple production environments.
