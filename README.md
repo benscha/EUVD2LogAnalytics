@@ -100,4 +100,4 @@ For an initial backfill, temporarily change `Initialize_FromDate` in `modules/lo
 to `"@{formatDateTime(addDays(utcNow(), -365), 'yyyy-MM-dd')}"` and run the workflow once.
 The workflow sends ingestion payloads in batches to handle larger backfills more reliably.
 
-
+The First Ingestion of 365D of Data was about 0.012 GB, so you don't have to be afraid of the Costs.
