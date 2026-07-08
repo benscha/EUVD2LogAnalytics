@@ -88,12 +88,12 @@ against a fresh (or existing) resource group. No manual configuration is require
 ## KQL Snippets
 ```
 DeviceTvmSoftwareVulnerabilities
-| join EUVD_CL on $left.CveId == $right.CveId
+| join EUVD_CL on CveId
 
 // Finds all vulnerabilities with an EPSS score greater than 20%.
 // EPSS = the probability of a vulnerability being actively exploited within 30 days
 DeviceTvmSoftwareVulnerabilities
-| join EUVD_CL on $left.CveId == $right.CveId
+| join EUVD_CL on CveId
 | where EPSS > 20
 
 ```
