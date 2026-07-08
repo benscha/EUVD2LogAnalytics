@@ -1,4 +1,4 @@
-# EUVD to Microsoft Sentinel Vulnerability Intelligence Platform
+# EUVD to Log Analytics Table
 
 A fully Azure-native, serverless pipeline that pulls vulnerability data daily from the
 public [European Union Vulnerability Database (EUVD)](https://euvd.enisa.europa.eu/) API
