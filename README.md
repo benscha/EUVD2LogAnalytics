@@ -90,6 +90,12 @@ against a fresh (or existing) resource group. No manual configuration is require
 DeviceTvmSoftwareVulnerabilities
 | join EUVD_CL on $left.CveId == $right.CveId
 
+// Finds all vulnerabilities with an EPSS score greater than 20%.
+// EPSS = the probability of a vulnerability being actively exploited within 30 days
+DeviceTvmSoftwareVulnerabilities
+| join EUVD_CL on $left.CveId == $right.CveId
+| where EPSS > 20
+
 ```
 
 ## Notes
