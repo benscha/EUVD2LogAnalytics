@@ -72,11 +72,6 @@ troubleshooting-guide.md        Common issues and fixes
 
 - No client secrets, certificates, shared keys, connection strings, or local
   authentication anywhere in this project.
-- The Logic App authenticates to Azure Monitor's Logs Ingestion API using its
-  user-assigned managed identity (Microsoft Entra ID token, audience
-  `https://monitor.azure.com`).
-- The Log Analytics workspace has `disableLocalAuth` enabled, so workspace-key based
-  ingestion is rejected even if attempted.
 - Role assignments follow least privilege — see [docs.md](docs.md) for the exact roles
   and why each one is required.
 
